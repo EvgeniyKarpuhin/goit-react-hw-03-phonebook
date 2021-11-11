@@ -1,51 +1,63 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import styles from "./ContactForm.module.css";
+import React, { Component } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import PropTypes from 'prop-types';
+import s from './ContactForm.module.css';
 
-export default class ContactForm extends Component {
-  state = {
-    name: "",
-    number: "",
-  };
+const INITIAL_STATE = { name: '', tel: '' };
 
-  handleChange = (e) => {
+class ContactForm extends Component {
+  state = INITIAL_STATE;
+
+  handleChange = e => {
     const { name, value } = e.target;
-    this.setState({
-      [name]: value,
-    });
+    this.setState({ [name]: value });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
+    const { onAdd, onCheckforUniqName } = this.props;
+    const { name, tel } = this.state;
 
-    this.props.onAddContact({ ...this.state });
+    const checkUniqName = onCheckforUniqName(name);
+    if (!checkUniqName) return;
 
-    this.setState({ name: "", number: "" });
+    if (!(name && tel)) {
+      alert('Empty field');
+      return;
+    }
+
+    onAdd({ id: uuidv4(), name, tel });
+    this.reset();
   };
+
+  reset = () => {
+    this.setState(INITIAL_STATE);
+  };
+
   render() {
     return (
-      <form className={styles.TaskEditor} onSubmit={this.handleSubmit}>
-        <label className={styles.TaskEditor_label}>
+      <form className={s.form} onSubmit={this.handleSubmit}>
+        <label className={s.label}>
           Name
           <input
-            className={styles.TaskEditor_input}
+            className={s.input}
             type="text"
             name="name"
             value={this.state.name}
             onChange={this.handleChange}
           />
         </label>
-        <label className={styles.TaskEditor_label}>
+        <label className={s.label}>
           Number
           <input
-            className={styles.TaskEditor_input}
-            type="text"
-            name="number"
-            value={this.state.number}
+            className={s.input}
+            type="tel"
+            name="tel"
+            value={this.state.tel}
             onChange={this.handleChange}
           />
         </label>
-        <button className={styles.TaskEditor_button} type="submit">
+        <button className={s.btnAddContact} type="submit">
           Add contact
         </button>
       </form>
@@ -54,7 +66,8 @@ export default class ContactForm extends Component {
 }
 
 ContactForm.propTypes = {
-  onAddContact: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
-  number: PropTypes.string.isRequired,
+  onAdd: PropTypes.func,
+  onCheckforUniqName: PropTypes.func,
 };
+
+export default ContactForm;

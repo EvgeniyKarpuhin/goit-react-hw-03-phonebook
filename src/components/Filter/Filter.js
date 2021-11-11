@@ -1,21 +1,24 @@
-import React from "react";
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
+import s from './Filter.module.css';
 
-export default function Filter({ value, onChangeFilter }) {
+function Filter({ filter, onFilter }) {
   return (
-    <div>
+    <label className={s.label}>
       Find contacts by name
       <input
+        className={s.input}
         type="text"
-        value={value}
-        onChange={(e) => onChangeFilter(e.target.value)}
+        name="filter"
+        value={filter}
+        onChange={e => onFilter(e.target.value)}
       />
-    </div>
+    </label>
   );
 }
 
-
 Filter.propTypes = {
-  value: PropTypes.string.isRequired,
-  onchangeFilter: PropTypes.func.isRequired,
+  filter: PropTypes.string,
+  onFilter: PropTypes.func,
 };
+
+export default Filter;
